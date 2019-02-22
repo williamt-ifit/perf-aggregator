@@ -43,7 +43,9 @@ function initialVerification (baseBranchData, featureBranchData) {
 		}
 		if (areDeeplyEqual(baseBranchData[i].data[0], headers) !== true) {
 			reportAnalysisFailed = true; 
-			reportErrors.push ("Csv files have mismatching headers.");
+			reportErrors.push ("Csv files have mismatching headers:");
+			reportErrors.push (baseBranchData[i].data[0].join(','));
+			reportErrors.push (headers.join(','));
 			return false;
 		}
 	}
@@ -53,7 +55,9 @@ function initialVerification (baseBranchData, featureBranchData) {
 		}
 		if (areDeeplyEqual(featureBranchData[i].data[0], headers) !== true) {
 			reportAnalysisFailed = true; 
-			reportErrors.push ("Csv files have mismatching headers.");
+			reportErrors.push ("Csv files have mismatching headers:");
+			reportErrors.push (featureBranchData[i].data[0].join(','));
+			reportErrors.push (headers.join(','));
 			return false;
 		}
 	}
