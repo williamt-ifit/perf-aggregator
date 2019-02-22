@@ -34,10 +34,49 @@ function onLoad () {
 	});
 	$importConfirmBtn.click(importButtonClicked);
 
+	configureCharts();
 	refreshTooltips();
 	
 	if(idParam) {
 		downloadReport(idParam);
+	}
+}
+
+function configureCharts () {
+	Chart.defaults.LineWithLine = Chart.defaults.line;
+	Chart.controllers.LineWithLine = Chart.controllers.line.extend({
+		draw: function(ease) {
+			Chart.controllers.line.prototype.draw.call(this, ease);
+
+			if (this.chart.tooltip._active && this.chart.tooltip._active.length) {
+				var activePoint = this.chart.tooltip._active[0];
+				var ctx = this.chart.ctx;
+				var x = activePoint.tooltipPosition().x;
+				var topY = this.chart.scales['y-axis-0'].top;
+				var bottomY = this.chart.scales['y-axis-0'].bottom;
+
+				// draw line
+				ctx.save();
+				ctx.beginPath();
+				ctx.moveTo(x, topY);
+				ctx.lineTo(x, bottomY);
+				ctx.lineWidth = 2;
+				ctx.strokeStyle = '#07C';
+				ctx.stroke();
+				ctx.restore();
+			}
+		}
+	});
+	Chart.Tooltip.positioners.custom = function(elements, eventPosition) {
+		/** @type {Chart.Tooltip} */
+		var tooltip = this;
+	
+		/* ... */
+	
+		return {
+			x: 10,
+			y: elements[0]._yScale.bottom+70
+		};
 	}
 }
 
@@ -171,19 +210,22 @@ function buildAtAGlanceChart($chart, report, metricType) {
 	var featureDataSet = atAGlanceChartData (Object.values(featureIntersectedSuperAggregate), metricType, "Feature", FeatureColor);
 
 	var config = {
-		type: 'line',
+		type: 'LineWithLine',
 		data: {
 			labels: stateIntersection,
 			datasets: [baseDataSet, featureDataSet]
 		},
 		options: {
+			maintainAspectRatio: false,
 			responsive: true,
 			title: {
 				display: false
 			},
 			tooltips: {
 				enabled:true,
-				mode: 'x-axis',
+				mode: 'index',
+				position:'custom',
+				intersect:false,
 				callbacks: {
 					label: function(tooltipItem, data) {
 						var val = parseFloat(tooltipItem.yLabel);
@@ -191,7 +233,8 @@ function buildAtAGlanceChart($chart, report, metricType) {
 						var branch = data.datasets[tooltipItem.datasetIndex].label;
 						return `${branch} - ${rounded}`;
 					}
-				}
+				},
+				caretSize:0
 			},
 			scales: {
 				xAxes: [{
@@ -203,6 +246,14 @@ function buildAtAGlanceChart($chart, report, metricType) {
 						display: false
 					}
 				}]
+			},
+			layout: {
+				padding: {
+					left: 0,
+					right: 0,
+					top: 0,
+					bottom: 80
+				}
 			}
 		}
 	};
@@ -222,11 +273,15 @@ function atAGlance($reportElement, report) {
 			<div class="row">
 				<div class="col-md-6 ">
 					<h4>Average CPU Utilization (%)</h4>
-					<canvas class="chart chart-at-a-glance line-chart line-chart-compare" id="chart-at-a-glance-cpu"></canvas>
+					<div class="at-a-glance-container">
+						<canvas class="chart chart-at-a-glance line-chart line-chart-compare" id="chart-at-a-glance-cpu"></canvas>
+					</div>
 				</div>
 				<div class="col-md-6 ">
 					<h4>Average Memory Used (MB)</h4>
-					<canvas class="chart chart-at-a-glance line-chart line-chart-compare" id="chart-at-a-glance-memory"></canvas>
+					<div class="at-a-glance-container">
+						<canvas class="chart chart-at-a-glance line-chart line-chart-compare" id="chart-at-a-glance-memory"></canvas>
+					</div>
 				</div>
 			</div>
 		</div>`
