@@ -72,6 +72,11 @@ canvas{
 	cursor: default;
 }
 
+.at-a-glance-container {
+	height:350px;
+	width: 100%;
+}
+
 .benchmark-row {
 	border: 1px solid black;
 	border-radius: 3px;
@@ -92,8 +97,6 @@ canvas{
 	margin-right:16px;
 	white-space: nowrap;
 }
-
-
 
 .benchmark-row-diff {
 	color: white;
