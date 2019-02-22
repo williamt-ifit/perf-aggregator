@@ -384,7 +384,7 @@ function removeEmptyTailRowsForAll (dataSet) {
 	});
 }
 
-function analyzeDataSets (baseBranchData, featureBranchData) {
+function analyzeDataSets (baseBranchData, featureBranchData, reportName) {
 	// Removing empty tailing rows
 	removeEmptyTailRowsForAll (baseBranchData);
 	removeEmptyTailRowsForAll (featureBranchData);
@@ -403,6 +403,8 @@ function analyzeDataSets (baseBranchData, featureBranchData) {
 	featureBranchDataAggregates = createDataSetAggregates (featureBranchData);
 
 	return {
+		reportName: reportName,
+		timestamp: Math.round(new Date().getTime()/1000.0),
 		base: baseBranchDataAggregates,
 		feature: featureBranchDataAggregates,
 		reportVer: ReportVer

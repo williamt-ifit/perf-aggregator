@@ -221,11 +221,11 @@ function atAGlance($reportElement, report) {
 			<hr/>
 			<div class="row">
 				<div class="col-md-6 ">
-					<h4>Average CPU %</h4>
+					<h4>Average CPU Utilization (%)</h4>
 					<canvas class="chart chart-at-a-glance line-chart line-chart-compare" id="chart-at-a-glance-cpu"></canvas>
 				</div>
 				<div class="col-md-6 ">
-					<h4>Average Memory (kB)</h4>
+					<h4>Average Memory Used (MB)</h4>
 					<canvas class="chart chart-at-a-glance line-chart line-chart-compare" id="chart-at-a-glance-memory"></canvas>
 				</div>
 			</div>
@@ -343,12 +343,29 @@ function benchmarks ($reportElement, report) {
 	}
 }
 
+function titleAndDate ($reportElement, name, timestamp) {
+	var date = moment(timestamp * 1000);
+	$reportElement.append(jQuery(
+		`<div class="title-date row">
+			<div class="col-md-6 report-title">
+				<h4>${name}</h4>
+			</div>
+			<div class="col-md-6 report-date">
+				<h4>${date.format('MMMM Do YYYY, h:mm:ss a')}</h4>
+			</div>
+		</div>`
+	));
+}
+
 function loadReport(report, id) {
 	var $reportElement = jQuery('#report').first();
 	$reportElement.empty();
 	setExportButton(report, id);
 
 	checkVersion ($reportElement, report);
+	if ('reportName' in report && 'timestamp' in report) {
+		titleAndDate ($reportElement, report.reportName, report.timestamp);
+	}
 	atAGlance($reportElement, report);
 	benchmarks($reportElement, report);
 

@@ -34,7 +34,7 @@ function bs_input_file() {
 }
 
 function refreshValidation () {
-	var canRun = Object.keys(baseFiles).length > 0 && Object.keys(featureFiles).length > 0;
+	var canRun = Object.keys(baseFiles).length > 0 && Object.keys(featureFiles).length > 0 && jQuery('#report-name-input').val().trim().length > 0;
 	var $runButton = jQuery('#run-button');
 
 	if (canRun) {
@@ -115,6 +115,7 @@ function fileAdded(file, $fileList) {
 }
 
 function runButtonClicked () {
+	var name = jQuery('#report-name-input').val().trim();
 	var canRun = Object.keys(baseFiles).length > 0 && Object.keys(featureFiles).length > 0;
 	if (!canRun) {
 		return false;
@@ -124,13 +125,13 @@ function runButtonClicked () {
 	jQuery('#input-data-container').fadeOut(300, function() {
 		$(this).remove();
 		jQuery('#progress-container').fadeIn(300, function () {
-			beginAnalysis ();
+			beginAnalysis (name);
 		});
 	});
 }
 
-function beginAnalysis () {
-	var results = analyzeDataSets (Object.values(baseFiles), Object.values(featureFiles));
+function beginAnalysis (name) {
+	var results = analyzeDataSets (Object.values(baseFiles), Object.values(featureFiles), name);
 	if (!results) {
 		handleAnalysisError ();
 	} else {
@@ -213,6 +214,10 @@ jQuery(document).ready(function() {
 		`iFit Performance Report Generator - ver. ${ReportVer}<br/>
 		<a href="https://github.com/williamt-ifit/perf-aggregator">GitHub</div>`
 	);
+
+	jQuery('#report-name-input').on('input', function (e) {
+		refreshValidation();
+	});
 
 	bs_input_file();
 	jQuery('#run-button').click (runButtonClicked);

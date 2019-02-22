@@ -10,6 +10,7 @@
 ol.breadcrumb {
 	background: none;
 	margin-bottom: 0;
+	padding-right:0;
 }
 
 .home-breadcrumb {
@@ -22,6 +23,39 @@ ol.breadcrumb {
 
 .import-export > * {
 	margin-left:12px;
+}
+
+.title-date {
+	margin-bottom:72px;
+	color:#667;
+	font-style: italic;
+	height:32px;
+	line-height: 32px;
+	vertical-align: middle;
+}
+
+.title-date > div {
+	height:32px;
+	line-height: 32px;
+	vertical-align: middle;
+	white-space: nowrap;
+}
+
+.report-date { 
+	text-align:right; 
+	font-size: 16px;
+	height:32px;
+	line-height: 32px;
+}
+
+.report-date h4 { 
+	font-size: 16px;
+	height:32px;
+	line-height: 32px;
+}
+
+@media (max-width: 767px) {
+    .report-date { text-align:left !important; }
 }
 
 .section-header > * {
