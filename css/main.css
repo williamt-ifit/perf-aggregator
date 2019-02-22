@@ -1,0 +1,62 @@
+
+
+/* ==========================================================================
+   Author's custom styles
+   ========================================================================== */
+
+html, body {
+	margin:0;
+	padding:0;
+}
+
+.main-heading {
+	background-color: #007bff;
+	color: #eee;
+	border-radius: 0;
+}
+
+
+.main-heading a, .main-heading h1 {
+	color: #fff;
+	font-weight: bold;
+}
+
+.input-ghost {
+	display: none;
+	height: 0;
+}
+
+.jumbotron {
+	margin-bottom: 90px;
+}
+
+.container {
+	margin-bottom: 90px;
+}
+
+#progress-container .spinner-border {
+	width: 64px;
+	height: 64px;
+}
+
+#progress-container .progress-text {
+	color:#445;
+}
+
+.upload-list li.list-group-item {
+	font-size: 12px;
+}
+
+.upload-list li.list-group-item .upload-error {
+	font-weight: bold;
+	font-size: 11px;
+}
+
+#footer-text, #footer-text a {
+	font-size: 12px;
+	color: #ccc;
+}
+
+#footer-text a {
+	font-weight: bold;
+}
