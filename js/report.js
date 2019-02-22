@@ -33,10 +33,16 @@ function onLoad () {
 		}
 	});
 	$importConfirmBtn.click(importButtonClicked);
+
+	refreshTooltips();
 	
 	if(idParam) {
 		downloadReport(idParam);
 	}
+}
+
+function refreshTooltips() {
+	jQuery('[data-toggle="tooltip"]').tooltip();
 }
 
 function createSpinnerElement (text) {
@@ -345,6 +351,8 @@ function loadReport(report, id) {
 	checkVersion ($reportElement, report);
 	atAGlance($reportElement, report);
 	benchmarks($reportElement, report);
+
+	refreshTooltips();
 }
 
 function checkVersion ($reportElement, report) {

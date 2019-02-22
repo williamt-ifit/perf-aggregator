@@ -136,6 +136,8 @@ function genAggregates (values) {
 	var stdDev = getStandardDeviation (values);
 
 	return {
+		first: values[0],
+		last: values[values.length-1],
 		min: min,
 		max: max,
 		mean: mean,
@@ -219,6 +221,8 @@ function singleSuperAggregate (aggregates) {
 	var means = [];
 	var mins = [];
 	var stdDeviations = [];
+	var firsts = [];
+	var lasts = [];
 
 	for(var i=0; i<aggregates.length; i++) {
 		maxes.push (aggregates[i].max);
@@ -226,6 +230,8 @@ function singleSuperAggregate (aggregates) {
 		means.push (aggregates[i].mean);
 		mins.push (aggregates[i].min);
 		stdDeviations.push (aggregates[i].stdDeviation);
+		firsts.push(aggregates[i].first);
+		lasts.push(aggregates[i].last);
 	}
 
 	return {
@@ -234,21 +240,27 @@ function singleSuperAggregate (aggregates) {
 			maxMinDelta: getMax (maxMinDeltas),
 			mean: getMax (means),
 			min: getMax (mins),
-			stdDeviation: getMax (stdDeviations)
+			stdDeviation: getMax (stdDeviations),
+			first: getMax (firsts),
+			last: getMax (lasts)
 		},
 		minimumValues: {
 			max: getMin (maxes),
 			maxMinDelta: getMin (maxMinDeltas),
 			mean: getMin (means),
 			min: getMin (mins),
-			stdDeviation: getMin (stdDeviations)
+			stdDeviation: getMin (stdDeviations),
+			first: getMin (firsts),
+			last: getMin (lasts)
 		},
 		meanValues: {
 			max: getMeanAvg (maxes),
 			maxMinDelta: getMeanAvg (maxMinDeltas),
 			mean: getMeanAvg (means),
 			min: getMeanAvg (mins),
-			stdDeviation: getMeanAvg (stdDeviations)
+			stdDeviation: getMeanAvg (stdDeviations),
+			first: getMeanAvg (firsts),
+			last: getMeanAvg (lasts)
 		}
 	};
 }
