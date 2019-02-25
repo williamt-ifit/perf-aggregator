@@ -114,6 +114,10 @@ function sanitizeStorageFieldForDataSets (dataSets) {
 function getStageKeyValues (csvData) {
 	var stageIndex = csvData[0].indexOf("Stage");
 	var result = {};
+	var lastStageName = '';
+	var repeats = 0;
+	var suffix = '';
+
 	for(var i=1; i<csvData.length; i++) {
 		var csvLine = csvData[i];
 		var stageName = csvLine[stageIndex];
@@ -123,9 +127,16 @@ function getStageKeyValues (csvData) {
 		}
 
 		if (!(stageName in result)) {
+			suffix = '';
 			result[stageName] = [];
+		} else if (lastStageName != stageName) {
+			repeats++;
+			suffix = `-${repeats}`;
+			result[`${stageName}${suffix}`] = [];
 		}
-		result[stageName].push (csvLine);
+		result[`${stageName}${suffix}`].push (csvLine);
+
+		lastStageName = stageName;
 	}
 	return result;
 }
