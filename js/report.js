@@ -263,7 +263,7 @@ function buildAtAGlanceChart($chart, report, metricType) {
 
 function atAGlance($reportElement, report) {
 	var $atAGlance = jQuery(
-		`<div class="section-row">
+		`<div class="section-row no-bottom-padding">
 			<div class="at-a-glance row">
 				<div class="col-md-12 section-header">
 					<h2>At a glance</h2>
@@ -405,11 +405,86 @@ function titleAndDate ($reportElement, name, timestamp) {
 			<div class="col-md-6 report-title">
 				<h4>${name}</h4>
 			</div>
-			<div class="col-md-6 report-date">
+			<div class="col-md-6 report-date align-right-big-only">
 				<h4>${date.format('MMMM Do YYYY, h:mm:ss a')}</h4>
 			</div>
 		</div>`
 	));
+}
+
+function breakdownTableSection ($reportElement, report, elemId, heading, unitString, fetchDataFunc, fetchStdDevFunc) {
+	var $cpu = jQuery(
+		`<div class="section-row">
+			<div class="${elemId} row">
+				<div class="col-md-6 section-header">
+					<h2>${heading}</h2>
+				</div>
+				<div class="col-md-6 align-right-big-only">
+					<button class="btn btn-primary" data-toggle="collapse" data-target="#${elemId}-row" aria-expanded="false" aria-controls="${elemId}-row">Show</button>
+				</div>
+			</div>
+			<hr/>
+			<div class="row collapse" id="${elemId}-row">
+			</div>
+		</div>`
+	);
+	$reportElement.append($cpu);
+
+	var stdDev = fetchStdDevFunc(report);
+
+	var $cpuUtilRow = jQuery(`#${elemId}-row`);
+	var $table = jQuery(
+		`<div class="col-md-12 section-header">
+			<table class="table rounded-table table-striped">
+				<thead class="thead-dark">
+					<tr>
+						<th scope="col">Stage</th>
+						<th scope="col">Base Branch</th>
+						<th scope="col">Feature Branch</th>
+						<th scope="col">Difference</th>
+					</tr>
+				</thead>
+				<tbody id="${elemId}-table-rows">
+				</tbody>
+			</table>
+			<div class="breakdown-table-std-dev small-tip-text">Std. deviation: ${stdDev.toFixed (4)}${unitString}</div>
+		</div>`
+	);
+	$cpuUtilRow.append($table);
+
+	var $tableBody = jQuery(`#${elemId}-table-rows`);
+	var baseStateKeys = Object.keys(report.base.superAggregate);
+	var featureStateKeys = Object.keys(report.feature.superAggregate);
+	var stageIntersection = intersect(baseStateKeys, featureStateKeys);
+
+	for(var i=0; i<stageIntersection.length; i++) {
+		var stage = stageIntersection[i];
+		var baseVal = fetchDataFunc(report.base, stage);
+		var featureVal = fetchDataFunc(report.feature, stage);
+		var difference = featureVal - baseVal;
+		var diffString = `${difference.toFixed (2)}`;
+		if (difference >= 0) {
+			diffString = `+${diffString}`;
+		}
+
+		var grade = 'ideal';
+		if (difference > 0 && difference < stdDev) {
+			grade = 'warn';
+		}
+		if (difference > 0 && difference > stdDev) {
+			grade = 'nonideal';
+		}
+
+		var $tr = jQuery(
+			`<tr>
+				<th scope="row">${stage}</th>
+				<td>${baseVal.toFixed (2)}${unitString}</td>
+				<td>${featureVal.toFixed (2)}${unitString}</td>
+				<td class="grade grade-${grade}">${diffString}${unitString}</td>
+			</tr>`
+		);
+		$tableBody.append($tr);
+	}
 }
 
 function loadReport(report, id) {
@@ -423,6 +498,16 @@ function loadReport(report, id) {
 	}
 	atAGlance($reportElement, report);
 	benchmarks($reportElement, report);
+	breakdownTableSection($reportElement, report, 'cpu-utilization', 'CPU Utilization', '%', function (dataSet, stage) {
+		return dataSet.superAggregate[stage].cpu.meanValues.mean
+	}, function (report) {
+		return getMeanAvg ([report.base.benchmarks.cpu.stdDeviation, report.feature.benchmarks.cpu.stdDeviation]);
+	});
+	breakdownTableSection($reportElement, report, 'memory-usage', 'Memory Usage', ' MB', function (dataSet, stage) {
+		return dataSet.superAggregate[stage].memory.meanValues.mean
+	}, function (report) {
+		return getMeanAvg ([report.base.benchmarks.memory.stdDeviation, report.feature.benchmarks.memory.stdDeviation]);
+	});
 
 	refreshTooltips();
 }

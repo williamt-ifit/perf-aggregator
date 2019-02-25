@@ -42,10 +42,13 @@ ol.breadcrumb {
 }
 
 .report-date { 
-	text-align:right; 
 	font-size: 16px;
 	height:32px;
 	line-height: 32px;
+}
+
+.align-right-big-only {
+	text-align:right; 
 }
 
 .report-date h4 { 
@@ -55,7 +58,7 @@ ol.breadcrumb {
 }
 
 @media (max-width: 767px) {
-    .report-date { text-align:left !important; }
+    .align-right-big-only { text-align:left !important; }
 }
 
 .section-header > * {
@@ -63,7 +66,10 @@ ol.breadcrumb {
 }
 
 .section-row  {
-	margin-bottom: 48px;
+	margin-bottom: 72px;
+}
+.section-row.no-bottom-padding {
+	margin-bottom:0;
 }
 canvas{
 	-moz-user-select: none;
@@ -102,19 +108,24 @@ canvas{
 	color: white;
 }
 
-.benchmark-row-diff-ideal {
+.benchmark-row-diff-ideal,  table td.grade-ideal {
 	background-color: #28a745;
 	border-color: #28a745;
 }
 
-.benchmark-row-diff-warn {
+.benchmark-row-diff-warn, table td.grade-warn {
 	background-color: #ffb100;
 	border-color: #ffb100;
 }
 
-.benchmark-row-diff-nonideal {
+.benchmark-row-diff-nonideal,  table td.grade-nonideal {
 	background-color: #dc3545;
 	border-color: #dc3545;
+}
+
+table td.grade {
+	color:white;
+	font-weight: bold;
 }
 
 .small-tip-text {
@@ -126,6 +137,49 @@ canvas{
 #input-json-textarea {
 	font-size: 12px;
 	height: 256px;
+}
+
+table tbody {
+	font-weight: normal;
+}
+
+table.rounded-table  { 
+    border-collapse: separate;
+    border-left: 0;
+    border-radius: 4px;
+	border-spacing: 0px;
+	border:solid 1px #dee2e6;
+}
+.rounded-table thead {
+    display: table-header-group;
+    vertical-align: middle;
+    border-color: inherit;
+    border-collapse: separate;
+}
+.rounded-table * tr {
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+}
+.rounded-table * * * th, .rounded-table * * * td {
+    padding: 5px 4px 6px 4px; 
+    text-align: left;
+    vertical-align: top; 
+}
+
+.rounded-table thead tr * {
+	border:none;
+}
+
+.rounded-table tbody tr:first-child * {
+	border-top:none;
+}
+
+.rounded-table thead tr th:first-child {
+    border-radius: 4px 0 0 0;
+}
+.rounded-table thead tr th:last-child {
+    border-radius: 0 4px 0 0;
 }
 
 .c-b { clear:both; }
