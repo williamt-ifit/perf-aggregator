@@ -430,8 +430,6 @@ function breakdownTableSection ($reportElement, report, elemId, heading, unitStr
 	);
 	$reportElement.append($cpu);
 
-	var stdDev = fetchStdDevFunc(report);
-
 	var $cpuUtilRow = jQuery(`#${elemId}-row`);
 	var $table = jQuery(
 		`<div class="col-md-12 section-header">
@@ -441,13 +439,13 @@ function breakdownTableSection ($reportElement, report, elemId, heading, unitStr
 						<th scope="col">Stage</th>
 						<th scope="col">Base Branch</th>
 						<th scope="col">Feature Branch</th>
+						<th scope="col">Std. deviation</th>
 						<th scope="col">Difference</th>
 					</tr>
 				</thead>
 				<tbody id="${elemId}-table-rows">
 				</tbody>
 			</table>
-			<div class="breakdown-table-std-dev small-tip-text">Std. deviation: ${stdDev.toFixed (4)}${unitString}</div>
 		</div>`
 	);
 	$cpuUtilRow.append($table);
@@ -461,6 +459,7 @@ function breakdownTableSection ($reportElement, report, elemId, heading, unitStr
 		var stage = stageIntersection[i];
 		var baseVal = fetchDataFunc(report.base, stage);
 		var featureVal = fetchDataFunc(report.feature, stage);
+		var stdDev = fetchStdDevFunc(report, stage);
 		var difference = featureVal - baseVal;
 		var diffString = `${difference.toFixed (2)}`;
 		if (difference >= 0) {
@@ -480,11 +479,20 @@ function breakdownTableSection ($reportElement, report, elemId, heading, unitStr
 				<th scope="row">${stage}</th>
 				<td>${baseVal.toFixed (2)}${unitString}</td>
 				<td>${featureVal.toFixed (2)}${unitString}</td>
+				<td>${stdDev.toFixed (2)}${unitString}</td>
 				<td class="grade grade-${grade}">${diffString}${unitString}</td>
 			</tr>`
 		);
 		$tableBody.append($tr);
 	}
+}
+
+function getBreakdownMeanValueForStage (dataSet, stage) {
+	return dataSet.superAggregate[stage].cpu.meanValues.mean;
+}
+
+function getBreakdownMeanStdDeviationForStage (report, stage) {
+	return getMeanAvg ([report.base.superAggregate[stage].cpu.meanValues.stdDeviation, report.feature.superAggregate[stage].cpu.meanValues.stdDeviation]);
 }
 
 function loadReport(report, id) {
@@ -498,16 +506,8 @@ function loadReport(report, id) {
 	}
 	atAGlance($reportElement, report);
 	benchmarks($reportElement, report);
-	breakdownTableSection($reportElement, report, 'cpu-utilization', 'CPU Utilization', '%', function (dataSet, stage) {
-		return dataSet.superAggregate[stage].cpu.meanValues.mean
-	}, function (report) {
-		return getMeanAvg ([report.base.benchmarks.cpu.stdDeviation, report.feature.benchmarks.cpu.stdDeviation]);
-	});
-	breakdownTableSection($reportElement, report, 'memory-usage', 'Memory Usage', ' MB', function (dataSet, stage) {
-		return dataSet.superAggregate[stage].memory.meanValues.mean
-	}, function (report) {
-		return getMeanAvg ([report.base.benchmarks.memory.stdDeviation, report.feature.benchmarks.memory.stdDeviation]);
-	});
+	breakdownTableSection($reportElement, report, 'cpu-utilization', 'CPU Utilization', '%', getBreakdownMeanValueForStage, getBreakdownMeanStdDeviationForStage);
+	breakdownTableSection($reportElement, report, 'memory-usage', 'Memory Usage', ' MB', getBreakdownMeanValueForStage, getBreakdownMeanStdDeviationForStage);
 
 	refreshTooltips();
 }
